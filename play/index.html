@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Game...</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #2e2e2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .header {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            border-bottom: 2px solid #ff8c00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header-title span {
+            color: #ff8c00;
+        }
+        .back-btn {
+            background: #ff8c00;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        .back-btn:hover {
+            background: #e67e00;
+        }
+        .game-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        .game-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 20px;
+        }
+        .error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+        .error h2 {
+            color: #ff8c00;
+            margin-bottom: 10px;
+        }
+        .error a {
+            color: #ff8c00;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .error a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">Game<span>Hub</span></div>
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+    </div>
+    <div class="game-container" id="gameContainer">
+        <div class="loading">Loading game...</div>
+    </div>
+
+    <script>
+        // Games data
+        const gamesData = [
+  { "href": "./html/sans fight/index.html", "imgSrc": "sans fight.png", "name": "Sans Fight" , "page": 4, "id": 944 },
+  { "href": "./html/extreme off road cars/index.html", "imgSrc": "extreme off road cars.jpg", "name": "extreme off road cars" , "page": 4, "id": 941 },
+  { "href": "./html/football legends/index.html", "imgSrc": "football legends.jpg", "name": "football legends" , "page": 4, "id": 946 }
+        ];
+
+        const container = document.getElementById('gameContainer');
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = parseInt(urlParams.get('id'), 10);
+
+        // Fetch full games list from parent
+        fetch('../games.json')
+            .then(r => r.json())
+            .then(games => {
+                const game = games.find(g => g.id === gameId);
+                
+                if (!game) {
+                    showError('Game not found', 'The game you requested could not be found.');
+                    return;
+                }
+
+                // Update page title
+                document.title = game.name + ' - Game Hub';
+                const titleEl = document.querySelector('.header-title');
+                titleEl.textContent = game.name;
+
+                // Construct game URL pointing to external site
+                const gameHref = game.href.replace(/^\.\//, '');
+                const gameUrl = 'https://algebra-is-fun.github.io/' + gameHref;
+
+                // Create and embed iframe
+                const iframe = document.createElement('iframe');
+                iframe.src = gameUrl;
+                iframe.onload = function() {
+                    console.log('Game loaded:', game.name);
+                };
+                iframe.onerror = function() {
+                    showError('Failed to Load', 'Could not load game. The external server may be unavailable.');
+                };
+                
+                container.innerHTML = '';
+                container.appendChild(iframe);
+            })
+            .catch(err => {
+                console.error('Error loading games:', err);
+                showError('Error', 'Failed to load game list.');
+            });
+
+        function showError(title, message) {
+            container.innerHTML = `
+                <div class="error">
+                    <h2>${title}</h2>
+                    <p>${message}</p>
+                    <a href="../">← Back to Games</a>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

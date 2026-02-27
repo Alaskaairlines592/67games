@@ -278,20 +278,12 @@
             const paginated = filteredGames.slice(start, end);
 
             grid.innerHTML = paginated.map(game => {
-                const nameEscaped = encodeURIComponent(game.name || '');
-                const searchUrl = `https://www.google.com/search?q=${nameEscaped}`;
-                // construct URL to actual game page, falling back to Google if href missing
-                let gameUrl = searchUrl;
-                if (game.href) {
-                    // use external site path; remove leading ./ if present
-                    const rel = game.href.replace(/^\.\//, '');
-                    gameUrl = `https://algebra-is-fun.github.io/${rel}`;
-                }
+                const gameUrl = `play/?id=${game.id}`;
                 const ratingText = game.rating ? `★ ${game.rating}/5` : '';
                 const playersText = game.players ? `${game.players} players` : '';
                 const yearText = game.releaseYear ? `Released: ${game.releaseYear}` : '';
                 return `
-                <div class="game-card" role="button" onclick="window.open('${gameUrl}', '_blank', 'noopener')">
+                <div class="game-card" role="button" onclick="window.location.href='${gameUrl}'">
                     <h3>${game.name}</h3>
                     <div class="meta">
                         <span class="badge">${game.genre || ''}</span>
