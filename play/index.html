@@ -96,13 +96,6 @@
     </div>
 
     <script>
-        // Games data
-        const gamesData = [
-  { "href": "./html/sans fight/index.html", "imgSrc": "sans fight.png", "name": "Sans Fight" , "page": 4, "id": 944 },
-  { "href": "./html/extreme off road cars/index.html", "imgSrc": "extreme off road cars.jpg", "name": "extreme off road cars" , "page": 4, "id": 941 },
-  { "href": "./html/football legends/index.html", "imgSrc": "football legends.jpg", "name": "football legends" , "page": 4, "id": 946 }
-        ];
-
         const container = document.getElementById('gameContainer');
         const urlParams = new URLSearchParams(window.location.search);
         const gameId = parseInt(urlParams.get('id'), 10);
@@ -123,9 +116,9 @@
                 const titleEl = document.querySelector('.header-title');
                 titleEl.textContent = game.name;
 
-                // Construct game URL pointing to external site
+                // Construct LOCAL game URL
                 const gameHref = game.href.replace(/^\.\//, '');
-                const gameUrl = 'https://algebra-is-fun.github.io/' + gameHref;
+                const gameUrl = '../games/' + gameHref;
 
                 // Create and embed iframe
                 const iframe = document.createElement('iframe');
@@ -134,7 +127,7 @@
                     console.log('Game loaded:', game.name);
                 };
                 iframe.onerror = function() {
-                    showError('Failed to Load', 'Could not load game. The external server may be unavailable.');
+                    showError('Failed to Load', 'Could not load game. Check that game files exist locally.');
                 };
                 
                 container.innerHTML = '';
